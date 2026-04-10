@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Koppikar Chronicle | Digital Archive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --slate: #1a2a3a;
+            --gold-leaf: #af944d;
+            --ivory: #fcfcfc;
+            --shadow: rgba(0,0,0,0.1);
+            --transition: 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        body { font-family: 'Montserrat', sans-serif; background: var(--ivory); margin: 0; color: var(--slate); overflow-x: hidden; }
+
+        /* --- Hero --- */
+        .hero { height: 45vh; background: linear-gradient(rgba(26, 42, 58, 0.7), rgba(26, 42, 58, 0.8)), url('https://images.unsplash.com/photo-1444852538915-ac293cc69f8d?auto=format&fit=crop&w=1500&q=80'); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; text-align: center; color: white; }
+        .hero h1 { font-family: 'Cinzel', serif; font-size: 3.5rem; margin: 0; letter-spacing: 5px; }
+
+        /* --- Heritage Flow --- */
+        .heritage-flow { padding: 60px 5%; overflow-x: auto; white-space: nowrap; background: white; border-bottom: 1px solid #eee; }
+        .generation-block { display: inline-block; vertical-align: top; margin-right: 80px; text-align: center; }
+        .gen-label { font-family: 'Cinzel', serif; color: var(--gold-leaf); margin-bottom: 25px; border-bottom: 2px solid var(--gold-leaf); display: inline-block; padding-bottom: 5px; }
+        .family-group { display: flex; gap: 20px; justify-content: center; }
+        .couple-col { display: flex; flex-direction: column; gap: 15px; }
+
+        .profile-card { background: white; width: 170px; padding: 20px; border-radius: 12px; box-shadow: 0 8px 25px var(--shadow); cursor: pointer; transition: var(--transition); border: 1px solid #f0f0f0; white-space: normal; }
+        .profile-card:hover { transform: translateY(-8px); border-color: var(--gold-leaf); }
+        .profile-card h3 { margin: 10px 0 0; font-size: 0.95rem; font-family: 'Cinzel'; }
+        .profile-card span { font-size: 0.6rem; color: var(--gold-leaf); font-weight: 700; text-transform: uppercase; }
+
+        /* --- Vault Trigger --- */
+        .vault-trigger-zone { padding: 80px 0; text-align: center; background: white; }
+        .vault-btn { background: var(--slate); color: var(--gold-leaf); font-family: 'Cinzel', serif; font-size: 1.1rem; padding: 18px 45px; border: 2px solid var(--gold-leaf); border-radius: 50px; cursor: pointer; transition: var(--transition); letter-spacing: 2px; text-transform: uppercase; }
+        .vault-btn:hover { background: var(--gold-leaf); color: white; transform: scale(1.05); }
+
+        /* --- Media Vault Overlay --- */
+        .vault-overlay { position: fixed; inset: 0; background: var(--slate); z-index: 2000; display: none; overflow-y: auto; padding: 50px 5%; }
+        .vault-overlay.active { display: block; animation: fadeIn 0.4s forwards; }
+        .vault-grid { column-count: 3; column-gap: 20px; max-width: 1100px; margin: 40px auto; }
+        
+        .vault-item { margin-bottom: 20px; break-inside: avoid; border-radius: 10px; overflow: hidden; position: relative; cursor: pointer; border: 1px solid rgba(175, 148, 77, 0.2); }
+        .vault-item img, .vault-item video { width: 100%; display: block; transition: 0.3s; }
+        .vault-item:hover img { transform: scale(1.05); }
+
+        /* Video Play Icon Overlay */
+        .video-indicator { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); color: white; font-size: 3rem; opacity: 0.8; transition: 0.3s; }
+        .vault-item:hover .video-indicator { opacity: 1; background: rgba(0,0,0,0.4); }
+
+        /* --- Video Theater Modal --- */
+        .theater-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; display: none; align-items: center; justify-content: center; }
+        .theater-modal.active { display: flex; }
+        .theater-content { width: 90%; max-width: 900px; position: relative; }
+        .theater-content video { width: 100%; border-radius: 8px; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        
+        .close-btn { position: absolute; top: -50px; right: 0; color: white; font-size: 2rem; cursor: pointer; }
+        .close-vault { position: fixed; top: 30px; right: 40px; color: var(--gold-leaf); font-size: 3rem; cursor: pointer; z-index: 2001; }
+
+        /* --- Bio Side Panel --- */
+        .bio-panel { position: fixed; top: 0; right: -100%; width: 380px; height: 100%; background: white; z-index: 1500; box-shadow: -15px 0 60px rgba(0,0,0,0.2); transition: var(--transition); display: flex; flex-direction: column; }
+        .bio-panel.active { right: 0; }
+        .bio-header { background: var(--slate); color: white; padding: 50px 35px; position: relative; overflow: hidden; }
+        .bio-header h2 { font-family: 'Cinzel', serif; margin: 0; position: relative; z-index: 2; font-size: 1.8rem; }
+        .bio-header::after { content: attr(data-initial); position: absolute; bottom: -20px; right: 5px; font-size: 10rem; font-family: 'Cinzel'; opacity: 0.1; color: white; }
+        .bio-content { padding: 35px; }
+
+        .overlay-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 1499; backdrop-filter: blur(5px); }
+        .overlay-bg.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        footer { background: #0a1118; color: #444; padding: 40px 0; text-align: center; font-size: 0.7rem; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+<div class="overlay-bg" id="overlayBg" onclick="closeBio()"></div>
+
+<header class="hero">
+    <div class="hero-content">
+        <p style="text-transform:uppercase; letter-spacing:4px; font-size:0.7rem;">Digital Media Archive</p>
+        <h1>The Koppikar Chronicle</h1>
+    </div>
+</header>
+
+<section class="heritage-flow">
+    <div class="generation-block">
+        <div class="gen-label">I. The Founders</div>
+        <div class="family-group">
+            <div class="profile-card" onclick="openBio('krishnanand')"><span>Grandfather</span><h3>Krishnanand</h3></div>
+            <div class="profile-card" onclick="openBio('mira_k')"><span>Grandmother</span><h3>Mira</h3></div>
+        </div>
+    </div>
+
+    <div class="generation-block">
+        <div class="gen-label">II. The Pillars</div>
+        <div class="family-group">
+            <div class="couple-col">
+                <div class="profile-card" onclick="openBio('pramod')"><span>Uncle</span><h3>Pramod</h3></div>
+                <div class="profile-card" onclick="openBio('shobna')"><span>Aunt</span><h3>Shobna</h3></div>
+            </div>
+            <div class="couple-col">
+                <div class="profile-card" style="border: 2px solid var(--gold-leaf)" onclick="openBio('durgesh')"><span>Father</span><h3>Durgesh</h3></div>
+                <div class="profile-card" style="border: 2px solid var(--gold-leaf)" onclick="openBio('rashmi')"><span>Mother</span><h3>Rashmi</h3></div>
+            </div>
+            <div class="couple-col">
+                <div class="profile-card" onclick="openBio('chaitanya')"><span>Uncle</span><h3>Chaitanya</h3></div>
+                <div class="profile-card" onclick="openBio('smita')"><span>Aunt</span><h3>Smita</h3></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="generation-block">
+        <div class="gen-label">III. The Future</div>
+        <div class="family-group">
+            <div class="profile-card" style="background: var(--slate); color: white;" onclick="openBio('pancham')"><span>Son | Developer</span><h3>Pancham</h3></div>
+            <div class="profile-card" onclick="openBio('avaneesh')"><span>Cousin</span><h3>Avaneesh</h3></div>
+            <div class="profile-card" onclick="openBio('sudheesh')"><span>Cousin</span><h3>Sudheesh</h3></div>
+        </div>
+    </div>
+</section>
+
+<section class="vault-trigger-zone">
+    <h2 style="font-family:'Cinzel'; margin-bottom: 30px;">Media Archives</h2>
+    <button class="vault-btn" onclick="toggleVault(true)">Open Memory Vault</button>
+</section>
+
+<div class="vault-overlay" id="vaultOverlay">
+    <div class="close-vault" onclick="toggleVault(false)">×</div>
+    <h2 style="color:white; font-family:'Cinzel'; text-align:center; font-size: 2rem; letter-spacing:4px; margin-bottom:50px;">Photos & Films</h2>
+    <div class="vault-grid" id="vaultGrid"></div>
+</div>
+
+<div class="theater-modal" id="theaterModal" onclick="closeTheater()">
+    <div class="theater-content" onclick="event.stopPropagation()">
+        <span class="close-btn" onclick="closeTheater()">×</span>
+        <video id="theaterVideo" controls autoplay></video>
+    </div>
+</div>
+
+<div class="bio-panel" id="bioPanel">
+    <div class="bio-header" id="bioHeader">
+        <p id="bioRole" style="color:var(--gold-leaf); text-transform:uppercase; font-size:0.65rem;"></p>
+        <h2 id="bioName"></h2>
+    </div>
+    <div class="bio-content">
+        <p id="bioText" style="line-height:1.6; color:#444; font-size:0.9rem;"></p>
+        <div id="tagContainer" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:20px;"></div>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2026 KOPPIKAR FAMILY ARCHIVE • MUMBAI</p>
+</footer>
+
+<script>
+    const familyData = {
+        krishnanand: { name: "Krishnanand Koppikar", role: "Paternal Grandfather", bio: "The visionary patriarch of the family.", tags: ["Founder", "Legacy"] },
+        mira_k: { name: "Mira Koppikar", role: "Paternal Grandmother", bio: "The caring matriarch and keeper of traditions.", tags: ["Tradition", "Care"] },
+        durgesh: { name: "Durgesh Koppikar", role: "Father", bio: "Leading the family with integrity and resilience.", tags: ["Guidance", "Resilience"] },
+        rashmi: { name: "Rashmi Koppikar", role: "Mother", bio: "The heart of the home, full of compassion.", tags: ["Compassion", "Heart"] },
+        pramod: { name: "Pramod Koppikar", role: "Paternal Uncle", bio: "A vital branch providing strength to the family tree.", tags: ["Unity", "Family"] },
+        shobna: { name: "Shobna Koppikar", role: "Paternal Aunt", bio: "Known for her grace and support.", tags: ["Grace", "Aunt"] },
+        chaitanya: { name: "Chaitanya Koppikar", role: "Paternal Uncle", bio: "Known for his incredible sense of humor.", tags: ["Humor", "Kindness"] },
+        smita: { name: "Smita Koppikar", role: "Paternal Aunt", bio: "A kind and family-oriented pillar.", tags: ["Support", "Family"] },
+        pancham: { name: "Pancham Koppikar", role: "Son | B.Sc. IT", bio: "Information Technology student and digital archivist.", tags: ["Developer", "IT"] },
+        avaneesh: { name: "Avaneesh", role: "Cousin", bio: "The next generation.", tags: ["Next Gen"] },
+        sudheesh: { name: "Sudheesh", role: "Cousin", bio: "Bringing youth and vibrant energy.", tags: ["Youth", "Vibrant"] }
+    };
+
+    // ADD YOUR MEDIA FILENAMES HERE
+    // Images: .jpg, .png, .webp | Videos: .mp4, .mov
+    const mediaItems = [
+        'images/pic1.jpg', 'images/pic2.jpg', 'images/pic3.jpg','images/pic4.jpg','images/pic5.jpg','images/pic6.jpg','images/pic7.jpg','images/pic8.jpg','images/pic9.jpg','videos/dhinkachika.mp4','videos/super_dancer.mp4','videos/Gita chanting.mp4','videos/chintata.mp4'
+    ];
+
+    function toggleVault(show) {
+        const v = document.getElementById('vaultOverlay');
+        v.classList.toggle('active', show);
+        document.body.style.overflow = show ? 'hidden' : 'auto';
+        
+        if(show && document.getElementById('vaultGrid').innerHTML === "") {
+            mediaItems.forEach(file => {
+                const isVideo = file.toLowerCase().endsWith('.mp4') || file.toLowerCase().endsWith('.mov');
+                const item = document.createElement('div');
+                item.className = 'vault-item';
+                
+                if(isVideo) {
+                    item.innerHTML = `
+                        <video src="${file}" muted></video>
+                        <div class="video-indicator">▶</div>
+                    `;
+                    item.onclick = () => openTheater(file);
+                } else {
+                    item.innerHTML = `<img src="${file}" onerror="this.src='https://via.placeholder.com/400x500?text=Memory'">`;
+                }
+                document.getElementById('vaultGrid').appendChild(item);
+            });
+        }
+    }
+
+    function openTheater(videoSrc) {
+        const modal = document.getElementById('theaterModal');
+        const video = document.getElementById('theaterVideo');
+        video.src = videoSrc;
+        modal.classList.add('active');
+    }
+
+    function closeTheater() {
+        const modal = document.getElementById('theaterModal');
+        const video = document.getElementById('theaterVideo');
+        video.pause();
+        video.src = "";
+        modal.classList.remove('active');
+    }
+
+    function openBio(id) {
+        const data = familyData[id];
+        document.getElementById('bioName').innerText = data.name;
+        document.getElementById('bioRole').innerText = data.role;
+        document.getElementById('bioText').innerText = data.bio;
+        document.getElementById('bioHeader').setAttribute('data-initial', data.name.charAt(0));
+        document.getElementById('tagContainer').innerHTML = data.tags.map(t => `<span style="background:#f0f0f0; padding:5px 12px; border-radius:20px; font-size:0.7rem; font-weight:600;">#${t}</span>`).join('');
+        document.getElementById('bioPanel').classList.add('active');
+        document.getElementById('overlayBg').classList.add('active');
+    }
+
+    function closeBio() {
+        document.getElementById('bioPanel').classList.remove('active');
+        document.getElementById('overlayBg').classList.remove('active');
+    }
+</script>
+
+</body>
+</html>
